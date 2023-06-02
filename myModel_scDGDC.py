@@ -6,7 +6,7 @@ import numpy as np
 from sklearn import metrics
 from loss import ZINB, pairwise_loss, cal_dist
 
-# 定义梯度裁剪函数
+# Define the gradient clipping function
 def clip_gradients(gradients, clip_value):
     clipped_gradients = []
     for gradient in gradients:
@@ -43,7 +43,6 @@ class GAE(tf.keras.Model):
         super(GAE, self).__init__()
         if dec_dim is None:
             dec_dim = [128, 256, 512]
-            # dec_dim = [128, 256]
         self.hidden_dim = hidden_dim
         self.latent_dim = latent_dim
         self.raw_X = raw_X
@@ -101,11 +100,11 @@ class GAE(tf.keras.Model):
                     loss = W_a * A_rec_loss + W_x * zinb_loss + alpha * reg_loss
                 else:
                     loss = W_a * A_rec_loss + W_x * zinb_loss
-            # 定期输出损失值
+            # Print loss
             if epoch % info_step == 0:
                 print("Epoch", epoch, "total_loss:", loss.numpy())
 
-            # 早停准则
+            # Early stop
             if loss < best_loss:
                 best_loss = loss
                 count = 0
@@ -128,10 +127,8 @@ class GAE(tf.keras.Model):
     def train(self, y, epochs=300, lr=5e-4, W_a=0.0, W_x=1.0, W_c=0.3, info_step=1, n_update=2, centers=None, alpha = 0.0,
               ml_ind1 = np.array([]), ml_ind2 = np.array([]), cl_ind2 = np.array([]), f = "log.txt"):
 
-        print(self.cluster_layer.clusters)
         self.cluster_layer.clusters = centers
-        print(self.cluster_layer.clusters)
-
+        
         # Training
         lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
             initial_learning_rate=lr, decay_steps=epochs, decay_rate=0.99)
@@ -194,7 +191,7 @@ class GAE(tf.keras.Model):
             if epoch % info_step == 0:
                 print("Epoch", epoch, "total_loss:", tot_loss.numpy())
 
-            # 早停准则
+            # Early stop
             if stop_loss < best_loss:
                 best_loss = stop_loss
                 loss_count = 0
