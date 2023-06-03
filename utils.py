@@ -49,7 +49,7 @@ def dotsne(X, dim=2, ran=23):
 def scatter_single(X, class_idxs, legend=False, ran=True):
     X = np.array(X)
 
-    fig, axes = plt.subplots()  # 此处是一个1*3的图
+    fig, axes = plt.subplots()  
 
     # plt.figure(figsize=(8, 3))
     classes = list(np.unique(class_idxs))
@@ -77,9 +77,7 @@ def myscatter(filename, X_orig, X_pretrain, X_train, class_idxs, legend=False, r
     X_orig = np.array(X_orig)
     X_pretrain = np.array(X_pretrain)
     X_train = np.array(X_train)
-    # 分别对应原始数据可视化、预处理后可视化以及处理完成之后的可视化结果
-    #  设置大小为1000*300像素大小
-    fig, axes = plt.subplots(1, 3, figsize=(10, 3), sharey='row')  # 此处是一个1*3的图
+    fig, axes = plt.subplots(1, 3, figsize=(10, 3), sharey='row')  
 
     # plt.figure(figsize=(8, 3))
     classes = list(np.unique(class_idxs))
@@ -99,21 +97,12 @@ def myscatter(filename, X_orig, X_pretrain, X_train, class_idxs, legend=False, r
                         linestyle='', ms=4, label=str(cls), alpha=1, color=colors[i],
                         markeredgecolor='black', markeredgewidth=0.15)
     if legend:
-        # axes[0].legend(bbox_to_anchor=(1.03, 1), loc=2, borderaxespad=0, fontsize=10, markerscale=2, frameon=False,
-        #                ncol=1, handletextpad=0.1, columnspacing=0.5)
-        # axes[1].legend(bbox_to_anchor=(1.03, 1), loc=2, borderaxespad=0, fontsize=10, markerscale=2, frameon=False,
-        #                ncol=1, handletextpad=0.1, columnspacing=0.5)
         axes[2].legend(bbox_to_anchor=(1.03, 1), loc=2, borderaxespad=0, fontsize=10, markerscale=2, frameon=False,
                        ncol=1, handletextpad=0.1, columnspacing=0.5)
 
     for ax in axes:
         ax.set_xticks([])
         ax.set_yticks([])
-
-    # plt.xticks([])
-    # plt.yticks([])
-    # plt.axis('off')
-
     plt.savefig(filename)
 
     return axes
@@ -141,7 +130,6 @@ def scGAE_scatter(filename, Y, class_idxs, legend=True, ran=False):
     plt.xticks([])
     plt.yticks([])
 
-    # plt.show()
     plt.savefig(filename)
 
     return ax
@@ -155,8 +143,6 @@ def dopca(X, dim=50):
 def generate_random_pair(count, S, n_pairs):
     """
     Generate random pairwise constraints.
-    
-    n_pairs要生成的成对约束占细胞总数的比例
     """
     pair_nums = np.round(count.shape[0] * n_pairs)
     ml_ind1, ml_ind2 = [], []
