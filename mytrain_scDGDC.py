@@ -33,16 +33,15 @@ def get_args(dataset_name, dataset_path, dataset_label, log_path, model_pth, see
     parser.add_argument("--dataset_name", default=dataset_name, type=str)
     parser.add_argument('--dataset_path', default=dataset_path, type=str,
                         help='path to dataset (adata)')
-    parser.add_argument("--dataset_label", default=dataset_label, type=str)  # 类别的标签
+    parser.add_argument("--dataset_label", default=dataset_label, type=str)  # Sample label
     # Pretrain
-    parser.add_argument("--pretrain_epochs", default=pretrain_epochs, type=int)  # 预训练的轮数
-    parser.add_argument("--pretrain_alpha", default=pretrain_alpha, type=float)  # 预训练和训练时，是否采用局部增强
-    parser.add_argument("--pca", default=None, type=int)  # 网络的输入是否为经过PCA处理后的count数据
-    parser.add_argument("--n_neighbors", default=n_neighbors, type=int)  # 构建图时使用的邻居数量
-    parser.add_argument("--n_pairs", default=n_pairs, type=float)  # 若采用局部增强，生成的数据对数量
-    parser.add_argument("--model_pth", default=model_pth, type=str)  # 预训练完成后聚类中心初始化的方式，可选择的方式包括：SC谱聚类和KMEANS
+    parser.add_argument("--pretrain_epochs", default=pretrain_epochs, type=int)  # Pre-trained epochs
+    parser.add_argument("--pretrain_alpha", default=pretrain_alpha, type=float)  # Weight of triplet contrast loss during pre-training
+    parser.add_argument("--n_neighbors", default=n_neighbors, type=int)  # Number of neighbors used in graph construction
+    parser.add_argument("--n_pairs", default=n_pairs, type=float)  # Number of triplets
+    parser.add_argument("--model_pth", default=model_pth, type=str)
     # Train
-    parser.add_argument("--maxiter", default=maxiter, type=int)  # 训练的轮数
+    parser.add_argument("--maxiter", default=maxiter, type=int)  # Trained epochs
     parser.add_argument("--train_alpha", default=train_alpha, type=float)
 
     args = parser.parse_args()
@@ -55,10 +54,8 @@ def computeMeanCentroids(data, DM_labels, KNN_labels):
     w = np.zeros((D, D), dtype=np.int64)
     for i in range(KNN_labels.size):
         w[DM_labels[i], KNN_labels[i]] += 1
-    # print(w)
     from sklearn.utils.linear_assignment_ import linear_assignment
     ind = linear_assignment(w.max() - w)
-    # print(ind)
     return np.array([data[np.logical_and(DM_labels == ind[i,0], KNN_labels == ind[i,1])].mean(0) for i in range(D)])
 
 def computeCentroids(data, labels):
@@ -94,7 +91,7 @@ if __name__ == "__main__":
     dataset_label = "Group"
     model_pth = "data/Qx_Mammary_Glan/"
     log_path = "data/Qx_Mammary_Glan/Qx_Mammary_Glan_preprocessed.txt"
-    args = get_args(dataset_name, dataset_path, dataset_label, log_path, model_pth, seed = 2)
+    args = get_args(dataset_name, dataset_path, dataset_label, log_path, model_pth, seed = 0)
     print(args)
     np.random.seed(args.seed)
     tf.random.set_random_seed(args.seed)
@@ -125,7 +122,7 @@ if __name__ == "__main__":
     if (args.n_pairs>0):
         ml_ind1, ml_ind2, cl_ind1, cl_ind2 = generate_random_pair(count, S, args.n_pairs)
 
-    # 定义模型
+    # Defining the model
     model = GAE(raw_count, count, size_factor, model_pth, DM_adj=DM_adj, DM_adj_n=DM_adj_n, KNN_adj=KNN_adj, KNN_adj_n=KNN_adj_n, S=S)
 
     # Pre-training
@@ -140,7 +137,7 @@ if __name__ == "__main__":
     print('Pretrain: run time is {:.2f} '.format(t1 - t0), 'minutes')
     print('Pretrain: run time is {:.2f} '.format(t1 - t0), 'minutes', file=f)
 
-    # 根据预训练的结果，通过谱聚类获得聚类初始中心点
+    # The initial centroids of clusters are obtained by Kmeans from the results of pre-training
     model.load_model("pretrain")
     X_pretrain = model.embedding(count)
     pca = PCA(n_components=15)
