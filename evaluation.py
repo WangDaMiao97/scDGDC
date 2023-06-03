@@ -8,7 +8,6 @@ from scipy.optimize import linear_sum_assignment as linear
 
 from sklearn import metrics
 
-# similar to https://github.com/karenlatong/AGC-master/blob/master/metrics.py
 def cluster_acc(y_true, y_pred):
     y_true = y_true - np.min(y_true)
 
@@ -72,7 +71,6 @@ def eva(data, y_true, y_pred, epoch=0, f="log.txt"):
     # nmi = np.round(nmi_score(y_true, y_pred), 5)
     ari = ari_score(y_true, y_pred)
     sc = silhouette_score(data, y_pred)
-    # print(f"epoch {epoch}:acc {acc:.4f}, nmi {nmi:.4f}, ari {ari:.4f}, f1 {f1:.4f}")
     print("MY epoch {}:acc {:.4f}, nmi {:.4f}, ari {:.4f}, f1 {:.4f}, sc {:.4f}".format(epoch, acc, nmi, ari, f1, sc))
     print("MY epoch {}:acc {:.4f}, nmi {:.4f}, ari {:.4f}, f1 {:.4f}, sc {:.4f}".format(epoch, acc, nmi, ari, f1, sc), file=f)
     return acc, nmi, ari, f1, sc
