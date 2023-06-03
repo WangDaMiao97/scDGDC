@@ -44,8 +44,7 @@ def get_adj_DM(adata,
     aff = nn_aff
     adj = aff.toarray()
 
-    indexs = adj.argsort() # 每一行按升序排序
-    # 每一行排名前indexs.shape[1]-k的值置为0
+    indexs = adj.argsort() 
     rep_num = adj.shape[1]+1-k
     for i in range(indexs.shape[0]):
         adj[i, indexs[i, :rep_num]]=0
@@ -75,8 +74,6 @@ def degree_power(A, k):
         D = np.diag(degrees)
     return D
 
-
-# 根据GNN公式，将邻接矩阵A标准化处理
 def norm_adj(A):
     normalized_D = degree_power(A, -0.5)
     output = normalized_D.dot(A).dot(normalized_D)
@@ -92,11 +89,5 @@ def _convert_to_affinity(adj, scaling_factors, device, with_self_loops=False):
     dists = dists ** 2 / (2 * scaling_factors.values[rows] ** 2) +\
             dists ** 2 / (2 * scaling_factors.values[cols] ** 2)
 
-
-    # Self loops
-    # if with_self_loops:
-    #     dists = np.append(dists, np.zeros(N))
-    #     rows = np.append(rows, range(N))
-    #     cols = np.append(cols, range(N))
     aff = csr_matrix((np.exp(-dists), (rows, cols)), shape=[N, N])
     return aff
