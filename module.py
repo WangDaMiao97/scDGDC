@@ -18,7 +18,6 @@ class Single_Encoder(tf.keras.Model):
         self.hidden_dim = hidden_dim
         self.latent_dim = latent_dim
 
-        # 均匀分布初始化
         initializer = GlorotUniform()
         self.drop = Dropout(0.2)
         self.relu = Activation('relu')
@@ -55,7 +54,6 @@ class Dual_Encoder(tf.keras.Model):
         self.hidden_dim = hidden_dim
         self.latent_dim = latent_dim
 
-        # 均匀分布初始化
         initializer = GlorotUniform()
         self.drop = Dropout(0.2)
         self.relu = Activation('relu')
